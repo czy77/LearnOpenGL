@@ -1,21 +1,24 @@
+#include <cmath>
 #include <iostream>
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include <cmath>
 
 
 const char *vertexShaderSource = "#version 330 core\n"
-                                 "layout (location =0) in vec3 aPos;\n"
+                                 "layout (location = 0) in vec3 aPos;\n"
                                  "void main()\n"
                                  "{\n"
-                                 "    gl_Position = vec4(aPos.x,aPos.y,aPos.z,1.0);\n"
+                                 "    gl_Position = vec4(aPos,1.0);\n"
                                  "}\0";
 
 
 const char *fragmentShaderSource = "#version 330 core\n"
                                    "out vec4 FragColor;\n"
+                                   "uniform vec4 ourColor;\n"
                                    "void main()\n"
                                    "{\n"
-                                   "FragColor = vec4(1.0f,0.5f,0.2f,1.0f);"
+                                   "    FragColor = ourColor;"
                                    "}\0";
 
 
@@ -105,39 +108,29 @@ int main() {
 
 
     float vertices[] = {
-            0.5f, 0.5f, 0.0f,
             0.5f, -0.5f, 0.0f,
             -0.5f, -0.5, 0.0f,
-            -0.5f, 0.5, 0.0f,
+            0.0f, 0.5f, 0.0f,
     };
 
-    unsigned int indices[] = {
-            0, 1, 3,
-            1, 2, 3
-    };
-
-
-    unsigned int VBO, VAO, EBO;
+    unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
     //绑定顶点数组,然后绑定顶点缓冲数组，最后配置顶点属性
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     //链接顶点属性
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
     //启用顶点属性
     glEnableVertexAttribArray(0);
 
-    //解绑缓冲数组
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    //顶点数组
-    glBindVertexArray(0);
+//    //解绑缓冲数组
+//    glBindBuffer(GL_ARRAY_BUFFER, 0);
+//    //顶点数组
+//    glBindVertexArray(0);
 
     //使用线框模式绘制图形
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -152,9 +145,18 @@ int main() {
 
         //使用上面创建的着色器程序
         glUseProgram(shaderProgram);
+
+        float timeValue = glfwGetTime();
+//        float redValue = sin(timeValue) / 2.0f;
+        float greenValue = sin(timeValue) / 2.0f + 0.5f;
+        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
         glBindVertexArray(VAO);
-//        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+//        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
         //检查并调用事件,交换缓冲
@@ -166,8 +168,14 @@ int main() {
     //释放资源
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+//    glDeleteBuffers(1, &EBO);
     glDeleteProgram(shaderProgram);
+
+
+    //顶点属性上限查询
+    int nrAttribute;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttribute);
+    std::cout << "Maximum nr of vertex attributes supported: " << nrAttribute << std::endl;
 
 
     glfwTerminate();
