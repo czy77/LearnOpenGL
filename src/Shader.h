@@ -114,7 +114,7 @@ Shader::Shader(const GLchar *vertexPath, const GLchar *fragmentPath, const char*
     }
     glLinkProgram(ID);
 
-    checkCompileErrors(ID, "PROGRRAM");
+    checkCompileErrors(ID, "PROGRAM");
     glDeleteShader(vertex);
     glDeleteShader(fragment);
     if (geometryPath != nullptr) {

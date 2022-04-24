@@ -67,9 +67,8 @@ int main() {
 
 
 
-
     //创建一个顶点着色器对象
-    Shader ourShader("3.3.shader.vs", "3.3.shader.fs");
+    Shader ourShader("../3.3.shader.vs", "../3.3.shader.fs");
 //    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 //    //把着色器源码附着到着色器对象， 然后编译
 //    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
